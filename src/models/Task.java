@@ -1,4 +1,4 @@
-//DTO用クラスTasks.java
+//DTO用クラスTask.java
 package models;
 
 import java.sql.Timestamp;
@@ -8,11 +8,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity                            //エンティティクラスであることを指定
+@NamedQueries({               //↓一覧表示用データを取得するJPQL
+	@NamedQuery(
+			name = "getAllTasks",
+			query = "SELECT m FROM Task AS m ORDER BY m.id DESC"
+			)
+	})
 @Table(name="tasks")        //エンティティにマッピングされる物理テーブル名を指定
-public class Tasks {
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+public class Task {
 	@Id                           //主キーフィールドを宣言
 	@Column(name="id")    //エンティティの各フィールドにマッピングされる物理テーブルのカラム名を指定
 	@GeneratedValue(strategy=GenerationType.IDENTITY) //主キーの値の生成戦略____//IDENTITYはID列を使用する場合に指定
