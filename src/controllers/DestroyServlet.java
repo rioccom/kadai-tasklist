@@ -2,7 +2,6 @@ package controllers;
 
 
 import java.io.IOException;
-import java.sql.Timestamp;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
@@ -15,45 +14,37 @@ import models.Task;
 import utils.DBUtil;
 
 
-@WebServlet(name = "update", urlPatterns = { "/update" })
-public class UpdateServlet extends HttpServlet {
+@WebServlet(name = "destroy", urlPatterns = { "/destroy" })
+public class DestroyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
 
-	public UpdateServlet() {
+	public DestroyServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String _token = (String)request.getParameter("_token");
-	
+		
 		if(_token != null && _token.equals(request.getSession().getId())) {
 			EntityManager em = DBUtil.createEntityManager();
-			
+		
 			//    セッションスコープからタスクのIDを取得して
-			//____該当のIDのメッセージ1件のみをデータベースから取得__________________
+			//____該当のIDのタスク1件のみをデータベースから取得_______________
 			Task m = em.find(Task.class, (Integer)(request.getSession().getAttribute("task_id")));
 		
-			//____フォームの内容を各プロパティに上書き__________________________________
-			String content = request.getParameter("content");
-			m.setContent(content);
-			
-			Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-			m.setUpdated_at(currentTime);       // 更新日時のみ上書き
-		
-			//____データベースを更新________________________________________________________
 			em.getTransaction().begin();
+			em.remove(m);       // データ削除
 			em.getTransaction().commit();
 			em.close();
 		
-			//____セッションスコープ上の不要になったデータを削除_______________________
+			//____セッションスコープ上の不要になったデータを削除____________________
 			request.getSession().removeAttribute("task_id");
 		
-			//____indexページへリダイレクト________________________________________________
+			//____indexページへリダイレクト______________________________________________
 			response.sendRedirect(request.getContextPath() + "/index");
 		}
 		
 	}
 	
 }
-
